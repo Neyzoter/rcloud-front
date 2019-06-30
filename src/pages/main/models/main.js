@@ -1,5 +1,6 @@
 import {    
     getUserList,
+    deleteUser,
     queryDeviceProp,
     selectChartDataByTime,
     setDeviceProperty,
@@ -11,7 +12,7 @@ import { message } from 'antd';
 export default {
     //储存model的state状态
     state: {
-        userName: "",
+        update: false,
         userSelectList: [],
         alarmCard: {
             state: true,
@@ -52,18 +53,27 @@ export default {
         *getUserList({ payload }, { call, put }) {
             //返回data
             let res = yield call(getUserList);
-            console.log("用户列表：");
-            console.log(res[0]["userName"]);
             yield put({
                 type: 'update',
                 payload: {
-                    userName: res !== null ? res:"暂无用户",
                     table: {
                         data:res
                     }
                 },
             });
         },
+        *deleteUser({ payload: userName }, { call, put, select }) {
+            yield call(deleteUser, userName);
+            let res = yield call(getUserList);
+            yield put({
+                type: 'update',
+                payload: {
+                    table: {
+                        data:res
+                    }
+                },
+            });
+          },
       //根据起止时间查询设备温湿度数据
         *selectChartDataByTime({ payload }, { call, put, select }) {
         let userName = yield select(state => state.main.userName);
@@ -72,7 +82,7 @@ export default {
             type: 'update',
             payload: {
                 chart: {
-                    dataList: res.data
+                    dataList: res
                 },
             }
         });

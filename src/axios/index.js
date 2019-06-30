@@ -2,6 +2,7 @@ import http from './tools.js';
 import {
   message
 } from 'antd';
+import request from '../utils/request.js';
 const url = 'http://192.168.3.5:8080/api/v1';
 // const url = 'http://localhost:9099/api/v1/device';
 
@@ -19,6 +20,12 @@ export const getUserList = async () => {
   let res = await http.get(url + '/database/getUser', null);
   checkStatus(res);
   return res.data;
+};
+
+export const deleteUser = async (userName) => {
+  return request(url + `/database/delete_user_name?userName=${userName}`, {
+    method: 'DELETE',
+  });
 };
 
 //查询设备的属性

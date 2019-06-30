@@ -1,30 +1,23 @@
 import React from 'react'
 import 'antd/dist/antd.css';
 import { connect } from 'dva';
-import { Table, DatePicker, Button } from 'antd';
+import { Table, Popconfirm, DatePicker, Button } from 'antd';
 import moment from 'moment';
+import styles from './index.css';
+import { forEach } from 'iterall';
+
 
 const { RangePicker } = DatePicker;
 const dateFormat = "MM-DD HH:mm:ss"
 
-const columns = [{
-  title: '用户名',
-  dataIndex: 'userName',
-}, {
-  title: '权限等级',
-  dataIndex: 'userPrivilege',
-}, {
-  title: '创建时间',
-  dataIndex: 'userCreate',
-}];
 
 //连接绑定model的state到组件的props
 const mapStateToProps = (state) => {
   const tableContent = state.main.table;
-  const userName = state.main.userName;
+  const update = state.main.update;
   return {
     tableContent,
-    userName
+    update
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -33,10 +26,15 @@ const mapDispatchToProps = (dispatch) => {
       dispatch({
         type: `main/getUserList`,
       });
+    },
+    deleteUser(userName){
+      dispatch({
+        type:`main/deleteUser`,
+        payload: userName
+      })
     }
   }
 };
-
 
 export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAlarmTable extends React.Component {
 
@@ -47,13 +45,18 @@ export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAla
       endTime: moment().format('YYYY-MM-DD HH:mm:ss'),
     }
   }
-
+  //第一次请求
   async componentDidMount() {
     await this.props.getUserList();
   }
-
   //store的state发生变化触发，在选择deviceName后触发数据的重新请求
   async componentWillReceiveProps(nextProps) {
+    console.info(JSON.stringify(nextProps));
+    console.info(JSON.stringify(this.props));
+    if(JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+      await this.props.getUserList();
+    }
+      
     // if (this.props.userName !== nextProps.userName) {
     //   console.info("componentWillReceiveProps");
     //   console.info(this.props.userName);
@@ -73,6 +76,28 @@ export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAla
 
     const rangerOnClick = () => this.props.getUserList();
 
+    const deleteOnClick = (userName) => this.props.deleteUser(userName);
+
+    const columns = [{
+      title: '用户名',
+      dataIndex: 'userName',
+    }, {
+      title: '权限等级',
+      dataIndex: 'userPrivilege',
+    }, {
+      title: '创建时间',
+      dataIndex: 'userCreate',
+    },{
+      title: '操作',
+      key: 'operation',
+      render: (text, record) => (
+        <span className={styles.operation}>
+          <Popconfirm title="Confirm to delete?" onConfirm={deleteOnClick.bind(null,record.userName)}>
+            <a href="">Delete</a>
+          </Popconfirm>
+        </span>
+      ),
+    },];
     return (
       <div>
         <div style={{ paddingBottom: 20 }}>
