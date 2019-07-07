@@ -1,15 +1,12 @@
 import React from 'react'
 import 'antd/dist/antd.css';
+import HorizontalUserAddForm from './HorizontalAddUserForm.js';
 import { connect } from 'dva';
-import { Table, Popconfirm, DatePicker, Button } from 'antd';
+import { Table, Popconfirm,  Button, DatePicker} from 'antd';
 import moment from 'moment';
 import styles from './index.css';
-import { forEach } from 'iterall';
-
-
 const { RangePicker } = DatePicker;
-const dateFormat = "MM-DD HH:mm:ss"
-
+const dateFormat = "YYYY-MM-DD T h:mm:ss"
 
 //连接绑定model的state到组件的props
 const mapStateToProps = (state) => {
@@ -32,12 +29,17 @@ const mapDispatchToProps = (dispatch) => {
         type:`main/deleteUser`,
         payload: userName
       })
+    },
+    addUser(userName,userKey,userPrivilege){
+      dispatch({
+        type:`main/addUser`,
+        payload: userName,userKey,userPrivilege
+      })
     }
   }
 };
 
 export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAlarmTable extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -67,6 +69,7 @@ export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAla
 
   //Tab之间切换
   render() {
+
     const datePickerOnOk = (dates) => {
       this.setState({
         beginTime: dates[0].format('YYYY-MM-DD HH:mm:ss'),
@@ -75,6 +78,8 @@ export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAla
     }
 
     const rangerOnClick = () => this.props.getUserList();
+
+    const addUserOnClick = (userName,userKey,userPrivilege) => this.props.addList(userName,userKey,userPrivilege)
 
     const deleteOnClick = (userName) => this.props.deleteUser(userName);
 
@@ -99,20 +104,29 @@ export default @connect(mapStateToProps, mapDispatchToProps) class HistoricalAla
       ),
     },];
     return (
+      
       <div>
         <div style={{ paddingBottom: 20 }}>
-          选择查询时间 &nbsp;
-          <RangePicker
+          <Button type="primary" style={{ display: 'abslute', top: 0 }} onClick={rangerOnClick}>
+            查询
+          </Button>&nbsp;&nbsp;&nbsp;&nbsp;
+          {/* <RangePicker
             defaultValue={[moment().startOf('month'), moment()]}
             ranges={{ '今天': [moment().startOf('day'), moment()], '本周': [moment().startOf('week'), moment()] }}
             onOk={datePickerOnOk}
             format={dateFormat}
             showTime={true}
-          />
+          /> */}
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <HorizontalUserAddForm/>;
+          {/* 添加新用户 &nbsp;
+          <input type="text" name="user_name" required></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          密码 &nbsp;
+          <input type="text" name="user_key" required></input>
           &nbsp;
           <Button type="primary" style={{ display: 'abslute', top: 0 }} onClick={rangerOnClick}>
-            查询
-          </Button>
+            添加
+          </Button> */}
         </div>
         <Table
           columns={columns}

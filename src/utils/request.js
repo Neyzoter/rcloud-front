@@ -1,15 +1,18 @@
 import fetch from 'dva/fetch';
-
+import {
+  message
+} from 'antd';
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
+    message.success('请求成功');
     return response;
   }
 
   const error = new Error(response.statusText);
   error.response = response;
+  message.error('请求失败或网络异常，请检查···');
   throw error;
 }
-
 /**
  * Requests a URL, returning a promise.
  *

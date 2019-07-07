@@ -27,7 +27,11 @@ export const deleteUser = async (userName) => {
     method: 'DELETE',
   });
 };
-
+export const addUser = async (values) => {
+  return request(url + `/database/addUser?userName=${values.userName}&userKey=${values.userKey}&userPrivilege=${values.userPrivilege}`, {
+    method: 'POST',
+  });
+};
 //查询设备的属性
 export const queryDeviceProp = async (params) => {
   // let res = await http.get(url + '/queryDeviceProp', params);

@@ -1,11 +1,10 @@
 import {    
     getUserList,
     deleteUser,
-    queryDeviceProp,
+    addUser,
     selectChartDataByTime,
     setDeviceProperty,
-    queryAlarmHistoryLogs,
-    clearAlarm} from '../../../axios/index.js';
+    } from '../../../axios/index.js';
 import { message } from 'antd';
 
 
@@ -64,6 +63,18 @@ export default {
         },
         *deleteUser({ payload: userName }, { call, put, select }) {
             yield call(deleteUser, userName);
+            let res = yield call(getUserList);
+            yield put({
+                type: 'update',
+                payload: {
+                    table: {
+                        data:res
+                    }
+                },
+            });
+          },
+          *addUser({ payload: values }, { call, put, select }) {
+            yield call(addUser, values);
             let res = yield call(getUserList);
             yield put({
                 type: 'update',

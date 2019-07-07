@@ -41,11 +41,11 @@ export default class Main extends React.Component {
         const contentList = {
             tab1: (
                 <div>
-                <HistoricalChart/>
+                <HistoricalAlarmTable/>
                 </div>),
             tab2: (
                 <div>
-                <HistoricalAlarmTable/>
+                <HistoricalChart/>
                 </div>),
         };
         //第一Row的Style内容
